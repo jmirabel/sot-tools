@@ -36,8 +36,9 @@ using dynamicgraph::command::makeCommandVoid1;
 SimpleSeqPlay::SimpleSeqPlay(const std::string& name)
     : Entity(name),
       firstSINTERN(NULL, sotNOSIGNAL, "SimpleSeqPlay(" + name + ")::intern(dummy)::init"),
-      postureSOUT_(boost::bind(&SimpleSeqPlay::computePosture, this, _1, _2), currentPostureSIN_,
-                   "SimpleSeqPlay(" + name + ")::output(vector)::posture"),
+      //postureSOUT_(boost::bind(&SimpleSeqPlay::computePosture, this, _1, _2),
+                   //"SimpleSeqPlay(" + name + ")::output(vector)::posture"),
+      postureSOUT_("SimpleSeqPlay(" + name + ")::output(vector)::posture"),
       currentPostureSIN_(NULL, "SimpleSeqPlay(" + name + ")::input(vector)::currentPosture"),
       state_(0),
       configId_prev_(0),
@@ -47,6 +48,8 @@ SimpleSeqPlay::SimpleSeqPlay(const std::string& name)
       dt_(0.001),
       time_to_start_(3.0),
       it_nbs_in_state1_(0) {
+  postureSOUT_.setFunction(boost::bind(&SimpleSeqPlay::computePosture, this, _1, _2));
+  postureSOUT_.setNeedUpdateFromAllChildren(true);
   firstSINTERN.setConstant(0);
   signalRegistration(postureSOUT_);
   signalRegistration(currentPostureSIN_);
